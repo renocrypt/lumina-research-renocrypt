@@ -9,14 +9,25 @@ import { useState } from "react";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("semantic-scholar");
-  const { articles, loading, error, searchArticles, recentSearches } =
-    useArticleSearch();
+  const {
+    articles,
+    loading,
+    error,
+    searchArticles,
+    recentSearches,
+    hasMore,
+    loadMoreArticles,
+  } = useArticleSearch();
 
-  const handleSearch = (query: string) => {
-    searchArticles(
-      query,
-      activeTab as "semantic-scholar" | "arxiv" | "openalex"
-    );
+  const handleSearch = (query: string, isLoadMore: boolean) => {
+    if (isLoadMore) {
+      loadMoreArticles();
+    } else {
+      searchArticles(
+        query,
+        activeTab as "semantic-scholar" | "arxiv" | "openalex"
+      );
+    }
   };
 
   const handleSelectRecentSearch = (query: string, source: string) => {
@@ -55,7 +66,11 @@ export default function App() {
         </div>
       )}
 
-      <QueryForm onSearch={handleSearch} />
+      <QueryForm
+        onSearch={handleSearch}
+        isLoading={loading}
+        hasMore={hasMore}
+      />
 
       {loading && <p className="text-blue-500">Loading...</p>}
       {error && (

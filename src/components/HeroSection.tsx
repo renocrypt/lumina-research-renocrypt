@@ -9,10 +9,10 @@ export const HeroSection: React.FC = () => {
       className="h-[60vh] p-0 relative flex w-full flex-col items-center justify-center rounded-lg border bg-background md:shadow-xl mb-8 overflow-hidden"
       color={["#7cfebb", "#fef18f", "#ff9a7b"]}
     >
-      <div className="relative p-8 w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-primary/10 to-secondary/10">
-        <div className="absolute inset-0 bg-grid-white/[0.2] bg-[size:20px_20px]">
+      <div className="relative p-8 w-full h-full flex items-center justify-center">
+        <div className="">
           <FlickeringGrid
-            className="z-0 absolute inset-0 size-full"
+            className="z-0 absolute inset-0"
             squareSize={4}
             gridGap={6}
             color="#bababa"

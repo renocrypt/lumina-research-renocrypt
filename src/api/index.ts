@@ -6,10 +6,21 @@ const API_ENDPOINTS = {
     OPENALEX: 'https://api.openalex.org/works',
 }
 
-export const searchSemanticScholar = async (query: string): Promise<Article[]> => {
+export interface SearchParams {
+    query: string;
+    offset: number;
+    limit: number;
+}
+
+export interface SearchResult {
+    articles: Article[];
+    hasMore: boolean;
+    nextOffset?: number;
+}
+
+export const searchSemanticScholar = async ({ query, offset, limit }: SearchParams): Promise<SearchResult> => {
     try {
-        // Fetch papers from the Semantic Scholar API without an API key
-        const response = await fetch(`${API_ENDPOINTS.SEMANTIC_SCHOLAR}?query=${encodeURIComponent(query)}&limit=10&fields=title,authors,year,abstract,venue,topics`);
+        const response = await fetch(`${API_ENDPOINTS.SEMANTIC_SCHOLAR}?query=${encodeURIComponent(query)}&offset=${offset}&limit=${limit}&fields=title,authors,year,abstract,venue,topics`);
 
         if (!response.ok) {
             throw new Error(`Semantic Scholar API request failed with status: ${response.status}`);
@@ -17,8 +28,7 @@ export const searchSemanticScholar = async (query: string): Promise<Article[]> =
 
         const data = await response.json();
 
-        // Map the returned data to the Article format
-        return data.data.map((item: any) => ({
+        const articles = data.data.map((item: any) => ({
             id: item.paperId,
             title: item.title,
             authors: item.authors.map((author: any) => author.name),
@@ -27,41 +37,69 @@ export const searchSemanticScholar = async (query: string): Promise<Article[]> =
             journal: item.venue || 'Unknown',
             keywords: item.topics?.map((topic: any) => topic.topic) || [],
         }));
+
+        return {
+            articles,
+            hasMore: data.next !== null,
+            nextOffset: offset + limit,
+        };
     } catch (error) {
         console.error('Error fetching data from Semantic Scholar:', error);
-        return [];
+        return { articles: [], hasMore: false };
     }
 };
 
+export const searchArxiv = async ({ query, offset, limit }: SearchParams): Promise<SearchResult> => {
+    try {
+        const response = await fetch(`${API_ENDPOINTS.ARXIV}?search_query=${encodeURIComponent(query)}&start=${offset}&max_results=${limit}`)
+        const data = await response.text()
+        const parser = new DOMParser()
+        const xmlDoc = parser.parseFromString(data, 'text/xml')
+        const entries = xmlDoc.getElementsByTagName('entry')
 
-export const searchArxiv = async (query: string): Promise<Article[]> => {
-    const response = await fetch(`${API_ENDPOINTS.ARXIV}?search_query=${encodeURIComponent(query)}&start=0&max_results=10`)
-    const data = await response.text()
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(data, 'text/xml')
-    const entries = xmlDoc.getElementsByTagName('entry')
+        const articles = Array.from(entries).map((entry: Element) => ({
+            id: entry.getElementsByTagName('id')[0]?.textContent || '',
+            title: entry.getElementsByTagName('title')[0]?.textContent || '',
+            authors: Array.from(entry.getElementsByTagName('author')).map((author: Element) => author.getElementsByTagName('name')[0]?.textContent || ''),
+            abstract: entry.getElementsByTagName('summary')[0]?.textContent || '',
+            year: new Date(entry.getElementsByTagName('published')[0]?.textContent || '').getFullYear(),
+            journal: 'arXiv',
+            keywords: [],
+        }));
 
-    return Array.from(entries).map((entry: any) => ({
-        id: entry.getElementsByTagName('id')[0].textContent,
-        title: entry.getElementsByTagName('title')[0].textContent,
-        authors: Array.from(entry.getElementsByTagName('author')).map((author: any) => author.getElementsByTagName('name')[0].textContent),
-        abstract: entry.getElementsByTagName('summary')[0].textContent,
-        year: new Date(entry.getElementsByTagName('published')[0].textContent).getFullYear(),
-        journal: 'arXiv',
-        keywords: [],
-    }))
+        return {
+            articles,
+            hasMore: articles.length === limit,
+            nextOffset: offset + limit,
+        };
+    } catch (error) {
+        console.error('Error fetching data from arXiv:', error);
+        return { articles: [], hasMore: false };
+    }
 }
 
-export const searchOpenAlex = async (query: string): Promise<Article[]> => {
-    const response = await fetch(`${API_ENDPOINTS.OPENALEX}?search=${encodeURIComponent(query)}`)
-    const data = await response.json()
-    return data.results.map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        authors: item.authorships.map((authorship: any) => authorship.author.display_name),
-        abstract: item.abstract,
-        year: new Date(item.publication_date).getFullYear(),
-        journal: item.host_venue?.display_name || 'Unknown',
-        keywords: item.concepts.map((concept: any) => concept.display_name),
-    }))
+export const searchOpenAlex = async ({ query, offset, limit }: SearchParams): Promise<SearchResult> => {
+    try {
+        const page = Math.floor(offset / limit) + 1;
+        const response = await fetch(`${API_ENDPOINTS.OPENALEX}?search=${encodeURIComponent(query)}&page=${page}&per-page=${limit}`)
+        const data = await response.json()
+        const articles = data.results.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            authors: item.authorships.map((authorship: any) => authorship.author.display_name),
+            abstract: item.abstract || 'No abstract available',
+            year: new Date(item.publication_date).getFullYear(),
+            journal: item.host_venue?.display_name || 'Unknown',
+            keywords: item.concepts.map((concept: any) => concept.display_name),
+        }));
+
+        return {
+            articles,
+            hasMore: data.meta.page < data.meta.pages,
+            nextOffset: offset + limit,
+        };
+    } catch (error) {
+        console.error('Error fetching data from OpenAlex:', error);
+        return { articles: [], hasMore: false };
+    }
 }
