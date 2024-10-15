@@ -72,10 +72,9 @@ export default function App() {
         hasMore={hasMore}
       />
 
-      {loading && <p className="text-blue-500">Loading...</p>}
       {error && (
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
           role="alert"
         >
           <strong className="font-bold">Error: </strong>
@@ -85,7 +84,7 @@ export default function App() {
           </p>
         </div>
       )}
-      {articles && <ResultsList articles={articles} />}
+      <ResultsList articles={articles} isLoading={loading} />
     </div>
   );
 }
