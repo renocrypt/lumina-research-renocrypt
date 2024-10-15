@@ -1,13 +1,11 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Article } from "@/types/types";
 
 interface RecentSearchesProps {
   searches: {
     query: string;
     source: string;
-    results: Article[];
     timestamp: number;
   }[];
   onSelectSearch: (query: string, source: string) => void;
@@ -43,7 +41,6 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
               <p className="text-xs text-muted-foreground">
                 {formatTimestamp(search.timestamp)}
               </p>
-              <p className="text-sm">{search.results.length} results</p>
             </CardContent>
           </Card>
         ))}
