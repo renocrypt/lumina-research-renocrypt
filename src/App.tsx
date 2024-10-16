@@ -1,16 +1,17 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QueryForm } from "./components/QueryForm";
+import { Badge } from "@/components/ui/badge";
 import { ResultsList } from "./components/ResultsList";
 import { RecentSearches } from "./components/RecentSearches";
 import { HeroSection } from "./components/HeroSection";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Footer } from "./components/Footer";
 import { useArticleSearch } from "./hooks/useArticleSearch";
-import { Search, Archive, Database } from "lucide-react";
+import { Archive, Database, Lock } from "lucide-react";
 import { useState } from "react";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("semantic-scholar");
+  const [activeTab, setActiveTab] = useState("arxiv");
   const {
     articles,
     loading,
@@ -25,16 +26,15 @@ export default function App() {
     if (isLoadMore) {
       loadMoreArticles();
     } else {
-      searchArticles(
-        query,
-        activeTab as "semantic-scholar" | "arxiv" | "openalex"
-      );
+      searchArticles(query, activeTab as "arxiv" | "openalex");
     }
   };
 
   const handleSelectRecentSearch = (query: string, source: string) => {
-    setActiveTab(source as "semantic-scholar" | "arxiv" | "openalex");
-    searchArticles(query, source as "semantic-scholar" | "arxiv" | "openalex");
+    if (source !== "semantic-scholar") {
+      setActiveTab(source as "arxiv" | "openalex");
+      searchArticles(query, source as "arxiv" | "openalex");
+    }
   };
 
   return (
@@ -44,10 +44,22 @@ export default function App() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
         <TabsList>
-          <TabsTrigger value="semantic-scholar">
-            <Search className="mr-2 h-4 w-4" />
-            Semantic Scholar
-          </TabsTrigger>
+          <div className="relative">
+            <Badge
+              variant="destructive"
+              className="absolute -top-4 left-1/4 transform -translate-x-1/2 z-10"
+            >
+              Coming Soon
+            </Badge>
+            <TabsTrigger
+              value="semantic-scholar"
+              disabled
+              className="opacity-50 cursor-not-allowed"
+            >
+              <Lock className="mr-2 h-4 w-4" />
+              Semantic Scholar
+            </TabsTrigger>
+          </div>
           <TabsTrigger value="arxiv">
             <Archive className="mr-2 h-4 w-4" />
             arXiv
