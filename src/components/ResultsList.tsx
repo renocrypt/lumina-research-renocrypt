@@ -10,27 +10,42 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Article } from "@/types/types";
+import { SkeletonCard } from "./SkeletonCard";
 
 interface ResultsListProps {
   articles: Article[];
+  isLoading: boolean;
 }
 
-export const ResultsList: React.FC<ResultsListProps> = ({ articles }) => {
+export const ResultsList: React.FC<ResultsListProps> = ({
+  articles,
+  isLoading,
+}) => {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[...Array(6)].map((_, index) => (
+          <SkeletonCard key={index} />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {articles.map((article) => (
         <Card key={article.id}>
           <CardHeader>
             <CardTitle>{article.title}</CardTitle>
-            <CardDescription>{article.authors.join(", ")}</CardDescription>
+            <CardDescription>
+              {article.authors.join(", ")} - {article.year}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">{article.abstract}</p>
+            <p className="text-sm mb-4">{article.abstract}</p>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">{article.year}</Badge>
-              <Badge variant="outline">{article.journal}</Badge>
-              {article.keywords.map((keyword) => (
-                <Badge key={keyword} variant="default">
+              {article.keywords.map((keyword, index) => (
+                <Badge key={index} variant="secondary">
                   {keyword}
                 </Badge>
               ))}

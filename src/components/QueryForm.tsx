@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectTrigger,
@@ -8,18 +9,22 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Download } from "lucide-react";
+import { Article } from "@/types/types";
+import { convertArticlesToCSV, downloadCSV } from "@/utils/csvExport";
 
 interface QueryFormProps {
   onSearch: (query: string, isLoadMore: boolean) => void;
   isLoading: boolean;
   hasMore: boolean;
+  articles: Article[];
 }
 
 export const QueryForm: React.FC<QueryFormProps> = ({
   onSearch,
   isLoading,
   hasMore,
+  articles,
 }) => {
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
@@ -31,6 +36,11 @@ export const QueryForm: React.FC<QueryFormProps> = ({
 
   const handleLoadMore = () => {
     onSearch(query, true);
+  };
+
+  const handleDownloadCSV = () => {
+    const csvContent = convertArticlesToCSV(articles);
+    downloadCSV(csvContent, "articles.csv");
   };
 
   return (
@@ -59,16 +69,29 @@ export const QueryForm: React.FC<QueryFormProps> = ({
           Search
         </Button>
       </form>
-      {hasMore && (
-        <Button
-          onClick={handleLoadMore}
-          disabled={isLoading}
-          variant="outline"
-          className="w-full"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Load More
-        </Button>
+      {articles.length > 0 && (
+        <div className="flex items-center justify-between">
+          <Button
+            onClick={handleLoadMore}
+            disabled={isLoading || !hasMore}
+            variant="outline"
+            className="flex-grow"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Load More
+          </Button>
+          <Button
+            onClick={handleDownloadCSV}
+            variant="outline"
+            className="ml-2"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download CSV
+          </Button>
+          <Badge variant="secondary" className="ml-2 h-9">
+            {articles.length} articles
+          </Badge>
+        </div>
       )}
     </div>
   );
