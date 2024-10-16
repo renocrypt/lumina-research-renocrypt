@@ -2,6 +2,7 @@ import React from "react";
 import { ShineBorder } from "./ui/magicui/sine-border";
 import SparklesText from "./ui/magicui/sparkles-text";
 import FlickeringGrid from "@/components/ui/magicui/flickering-grid";
+import { AnimatedText } from "./hero/animated-text";
 
 export const HeroSection: React.FC = () => {
   return (
@@ -20,6 +21,9 @@ export const HeroSection: React.FC = () => {
         />
       </div>
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl p-8">
+        <div className="mb-4">
+          <AnimatedText />
+        </div>
         <h1 className="text-6xl font-extrabold text-primary mb-4 tracking-tight">
           <SparklesText text="Lumina" />
         </h1>

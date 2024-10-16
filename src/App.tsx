@@ -31,7 +31,7 @@ export default function App() {
   };
 
   const handleSelectRecentSearch = (query: string, source: string) => {
-    setActiveTab(source);
+    setActiveTab(source as "semantic-scholar" | "arxiv" | "openalex");
     searchArticles(query, source as "semantic-scholar" | "arxiv" | "openalex");
   };
 
@@ -70,6 +70,7 @@ export default function App() {
         onSearch={handleSearch}
         isLoading={loading}
         hasMore={hasMore}
+        articles={articles}
       />
 
       {error && (
