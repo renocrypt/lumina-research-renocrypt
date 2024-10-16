@@ -1,50 +1,48 @@
-# React + TypeScript + Vite
+# Lumina - Illuminating Research Insights
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Lumina is a powerful research tool designed to help users explore and discover academic articles from various sources. Built with React, TypeScript, and Vite, this application provides a seamless interface for searching and analyzing research papers.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Multi-Source Search**: Search for articles across different academic databases, including arXiv and OpenAlex. (Semantic Scholar integration coming soon)
+- **Recent Searches**: Keep track of your recent searches for quick access to previous queries.
+- **Dynamic Results**: View search results in a clean, card-based layout with essential information about each article.
+- **Load More**: Easily load additional results as you explore your research topics.
+- **Dark Mode**: Toggle between light and dark themes for comfortable viewing in any environment.
+- **Responsive Design**: Enjoy a seamless experience across desktop and mobile devices.
+- **CSV Export**: Download your search results in CSV format for further analysis.
 
-## Expanding the ESLint configuration
+## Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui components
+- Lucide React icons
+- Framer Motion for animations
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Run the development server with `npm run dev`
+4. Open your browser and navigate to `http://localhost:5173`
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Contributing
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Acknowledgements
+
+- This project uses the arXiv API, OpenAlex API, and (coming soon) Semantic Scholar API for academic article data.
+- UI components are built with shadcn/ui and Tailwind CSS.
+- Special thanks to all contributors and users of Lumina.
+
+---
+
+Developed with ❤️ by renocrypt
