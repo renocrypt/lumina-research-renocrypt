@@ -13,9 +13,6 @@ export default tseslint.config(
       ecmaVersion: 2020,
       globals: globals.browser,
     },
-    "parserOptions": {
-    "project": "./tsconfig.json"
-    },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
