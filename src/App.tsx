@@ -3,6 +3,8 @@ import { QueryForm } from "./components/QueryForm";
 import { ResultsList } from "./components/ResultsList";
 import { RecentSearches } from "./components/RecentSearches";
 import { HeroSection } from "./components/HeroSection";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { Footer } from "./components/Footer";
 import { useArticleSearch } from "./hooks/useArticleSearch";
 import { Search, Archive, Database } from "lucide-react";
 import { useState } from "react";
@@ -36,7 +38,8 @@ export default function App() {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 min-h-screen flex flex-col">
+      <ThemeToggle />
       <HeroSection />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
@@ -86,6 +89,10 @@ export default function App() {
         </div>
       )}
       <ResultsList articles={articles} isLoading={loading} />
+
+      <div className="flex-grow"></div>
+
+      <Footer />
     </div>
   );
 }
