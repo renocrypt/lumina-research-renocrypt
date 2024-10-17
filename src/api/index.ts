@@ -20,7 +20,8 @@ export interface SearchResult {
 
 export const searchSemanticScholar = async ({ query, offset, limit }: SearchParams): Promise<SearchResult> => {
     try {
-        const response = await fetch(`${API_ENDPOINTS.SEMANTIC_SCHOLAR}?query=${encodeURIComponent(query)}&offset=${offset}&limit=${limit}&fields=title,authors,year,abstract,venue,topics`);
+        const fields = 'paperId,title,authors,year,abstract,venue,publicationTypes,openAccessPdf,s2FieldsOfStudy';
+        const response = await fetch(`${API_ENDPOINTS.SEMANTIC_SCHOLAR}?query=${encodeURIComponent(query)}&offset=${offset}&limit=${limit}&fields=${fields}`);
 
         if (!response.ok) {
             throw new Error(`Semantic Scholar API request failed with status: ${response.status}`);
@@ -35,7 +36,9 @@ export const searchSemanticScholar = async ({ query, offset, limit }: SearchPara
             abstract: item.abstract || 'No abstract available',
             year: item.year || 'N/A',
             journal: item.venue || 'Unknown',
-            keywords: item.topics?.map((topic: any) => topic.topic) || [],
+            keywords: item.s2FieldsOfStudy?.map((field: any) => field.category) || [],
+            publicationType: item.publicationTypes?.[0] || 'Unknown',
+            openAccessPdf: item.openAccessPdf?.url || null,
         }));
 
         return {

@@ -7,7 +7,7 @@ import { HeroSection } from "./components/HeroSection";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Footer } from "./components/Footer";
 import { useArticleSearch } from "./hooks/useArticleSearch";
-import { Archive, Database, Lock } from "lucide-react";
+import { Archive, Database, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 
 export default function App() {
@@ -26,15 +26,16 @@ export default function App() {
     if (isLoadMore) {
       loadMoreArticles();
     } else {
-      searchArticles(query, activeTab as "arxiv" | "openalex");
+      searchArticles(
+        query,
+        activeTab as "arxiv" | "openalex" | "semantic-scholar"
+      );
     }
   };
 
   const handleSelectRecentSearch = (query: string, source: string) => {
-    if (source !== "semantic-scholar") {
-      setActiveTab(source as "arxiv" | "openalex");
-      searchArticles(query, source as "arxiv" | "openalex");
-    }
+    setActiveTab(source as "arxiv" | "openalex" | "semantic-scholar");
+    searchArticles(query, source as "arxiv" | "openalex" | "semantic-scholar");
   };
 
   return (
@@ -49,16 +50,10 @@ export default function App() {
               variant="destructive"
               className="absolute -top-4 left-1/4 transform -translate-x-1/2 z-10"
             >
-              Coming Soon
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Unstable
             </Badge>
-            <TabsTrigger
-              value="semantic-scholar"
-              disabled
-              className="opacity-50 cursor-not-allowed"
-            >
-              <Lock className="mr-2 h-4 w-4" />
-              Semantic Scholar
-            </TabsTrigger>
+            <TabsTrigger value="semantic-scholar">Semantic Scholar</TabsTrigger>
           </div>
           <TabsTrigger value="arxiv">
             <Archive className="mr-2 h-4 w-4" />
