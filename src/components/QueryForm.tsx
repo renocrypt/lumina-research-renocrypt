@@ -10,32 +10,28 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Search, Plus, Download } from "lucide-react";
-import { Article } from "@/types/types";
 import { convertArticlesToCSV, downloadCSV } from "@/utils/csvExport";
+import { useArticleContext } from "@/contexts/ArticleContext";
 
-interface QueryFormProps {
-  onSearch: (query: string, isLoadMore: boolean) => void;
-  isLoading: boolean;
-  hasMore: boolean;
-  articles: Article[];
-}
-
-export const QueryForm: React.FC<QueryFormProps> = ({
-  onSearch,
-  isLoading,
-  hasMore,
-  articles,
-}) => {
+export const QueryForm: React.FC = () => {
+  const {
+    articles,
+    loading,
+    hasMore,
+    searchArticles,
+    loadMoreArticles,
+    activeTab,
+  } = useArticleContext();
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query, false);
+    searchArticles(query, activeTab);
   };
 
   const handleLoadMore = () => {
-    onSearch(query, true);
+    loadMoreArticles();
   };
 
   const handleDownloadCSV = () => {
@@ -64,7 +60,7 @@ export const QueryForm: React.FC<QueryFormProps> = ({
             <SelectItem value="citations">Citations</SelectItem>
           </SelectContent>
         </Select>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={loading}>
           <Search className="mr-2 h-4 w-4" />
           Search
         </Button>
@@ -73,7 +69,7 @@ export const QueryForm: React.FC<QueryFormProps> = ({
         <div className="flex items-center justify-between">
           <Button
             onClick={handleLoadMore}
-            disabled={isLoading || !hasMore}
+            disabled={loading || !hasMore}
             variant="outline"
             className="flex-grow"
           >

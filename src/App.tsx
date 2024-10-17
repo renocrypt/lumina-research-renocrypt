@@ -6,35 +6,23 @@ import { RecentSearches } from "./components/RecentSearches";
 import { HeroSection } from "./components/HeroSection";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Footer } from "./components/Footer";
-import { useArticleSearch } from "./hooks/useArticleSearch";
-import { Archive, Database, Lock } from "lucide-react";
-import { useState } from "react";
+import { Archive, Database, AlertTriangle } from "lucide-react";
+import { ArticleProvider, useArticleContext } from "./contexts/ArticleContext";
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState("arxiv");
+function AppContent() {
   const {
     articles,
     loading,
     error,
-    searchArticles,
     recentSearches,
-    hasMore,
-    loadMoreArticles,
-  } = useArticleSearch();
-
-  const handleSearch = (query: string, isLoadMore: boolean) => {
-    if (isLoadMore) {
-      loadMoreArticles();
-    } else {
-      searchArticles(query, activeTab as "arxiv" | "openalex");
-    }
-  };
+    activeTab,
+    setActiveTab,
+    loadPastSearch,
+  } = useArticleContext();
 
   const handleSelectRecentSearch = (query: string, source: string) => {
-    if (source !== "semantic-scholar") {
-      setActiveTab(source as "arxiv" | "openalex");
-      searchArticles(query, source as "arxiv" | "openalex");
-    }
+    setActiveTab(source as "arxiv" | "openalex" | "semantic-scholar");
+    loadPastSearch(query, source as "arxiv" | "openalex" | "semantic-scholar");
   };
 
   return (
@@ -42,23 +30,23 @@ export default function App() {
       <ThemeToggle />
       <HeroSection />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value: string) =>
+          setActiveTab(value as "semantic-scholar" | "arxiv" | "openalex")
+        }
+        className="mb-6"
+      >
         <TabsList>
           <div className="relative">
             <Badge
               variant="destructive"
               className="absolute -top-4 left-1/4 transform -translate-x-1/2 z-10"
             >
-              Coming Soon
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Unstable
             </Badge>
-            <TabsTrigger
-              value="semantic-scholar"
-              disabled
-              className="opacity-50 cursor-not-allowed"
-            >
-              <Lock className="mr-2 h-4 w-4" />
-              Semantic Scholar
-            </TabsTrigger>
+            <TabsTrigger value="semantic-scholar">Semantic Scholar</TabsTrigger>
           </div>
           <TabsTrigger value="arxiv">
             <Archive className="mr-2 h-4 w-4" />
@@ -81,12 +69,7 @@ export default function App() {
         </div>
       )}
 
-      <QueryForm
-        onSearch={handleSearch}
-        isLoading={loading}
-        hasMore={hasMore}
-        articles={articles}
-      />
+      <QueryForm />
 
       {error && (
         <div
@@ -106,5 +89,13 @@ export default function App() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ArticleProvider>
+      <AppContent />
+    </ArticleProvider>
   );
 }
