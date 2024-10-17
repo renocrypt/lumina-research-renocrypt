@@ -8,14 +8,12 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { Footer } from "./components/Footer";
 import { Archive, Database, AlertTriangle } from "lucide-react";
 import { ArticleProvider, useArticleContext } from "./contexts/ArticleContext";
-import { useEffect } from "react";
 
 function AppContent() {
   const {
     articles,
     loading,
     error,
-    searchArticles,
     recentSearches,
     activeTab,
     setActiveTab,
