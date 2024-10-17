@@ -6,36 +6,25 @@ import { RecentSearches } from "./components/RecentSearches";
 import { HeroSection } from "./components/HeroSection";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Footer } from "./components/Footer";
-import { useArticleSearch } from "./hooks/useArticleSearch";
 import { Archive, Database, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { ArticleProvider, useArticleContext } from "./contexts/ArticleContext";
+import { useEffect } from "react";
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState("arxiv");
+function AppContent() {
   const {
     articles,
     loading,
     error,
     searchArticles,
     recentSearches,
-    hasMore,
-    loadMoreArticles,
-  } = useArticleSearch();
-
-  const handleSearch = (query: string, isLoadMore: boolean) => {
-    if (isLoadMore) {
-      loadMoreArticles();
-    } else {
-      searchArticles(
-        query,
-        activeTab as "arxiv" | "openalex" | "semantic-scholar"
-      );
-    }
-  };
+    activeTab,
+    setActiveTab,
+    loadPastSearch,
+  } = useArticleContext();
 
   const handleSelectRecentSearch = (query: string, source: string) => {
     setActiveTab(source as "arxiv" | "openalex" | "semantic-scholar");
-    searchArticles(query, source as "arxiv" | "openalex" | "semantic-scholar");
+    loadPastSearch(query, source as "arxiv" | "openalex" | "semantic-scholar");
   };
 
   return (
@@ -43,7 +32,13 @@ export default function App() {
       <ThemeToggle />
       <HeroSection />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value: string) =>
+          setActiveTab(value as "semantic-scholar" | "arxiv" | "openalex")
+        }
+        className="mb-6"
+      >
         <TabsList>
           <div className="relative">
             <Badge
@@ -76,12 +71,7 @@ export default function App() {
         </div>
       )}
 
-      <QueryForm
-        onSearch={handleSearch}
-        isLoading={loading}
-        hasMore={hasMore}
-        articles={articles}
-      />
+      <QueryForm />
 
       {error && (
         <div
@@ -101,5 +91,13 @@ export default function App() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ArticleProvider>
+      <AppContent />
+    </ArticleProvider>
   );
 }

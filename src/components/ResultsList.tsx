@@ -31,6 +31,10 @@ export const ResultsList: React.FC<ResultsListProps> = ({
     );
   }
 
+  if (articles.length === 0) {
+    return <p>No articles found. Try a different search query.</p>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {articles.map((article) => (

@@ -18,6 +18,28 @@ export interface SearchResult {
     nextOffset?: number;
 }
 
+interface SemanticScholarItem {
+    paperId: string;
+    title: string;
+    authors: { name: string }[];
+    abstract?: string;
+    year?: number;
+    venue?: string;
+    s2FieldsOfStudy?: { category: string }[];
+    publicationTypes?: string[];
+    openAccessPdf?: { url: string };
+}
+
+interface OpenAlexItem {
+    id: string;
+    title: string;
+    authorships: { author: { display_name: string } }[];
+    abstract?: string;
+    publication_date: string;
+    host_venue?: { display_name: string };
+    concepts: { display_name: string }[];
+}
+
 export const searchSemanticScholar = async ({ query, offset, limit }: SearchParams): Promise<SearchResult> => {
     try {
         const fields = 'paperId,title,authors,year,abstract,venue,publicationTypes,openAccessPdf,s2FieldsOfStudy';
@@ -29,14 +51,14 @@ export const searchSemanticScholar = async ({ query, offset, limit }: SearchPara
 
         const data = await response.json();
 
-        const articles = data.data.map((item: any) => ({
+        const articles = data.data.map((item: SemanticScholarItem) => ({
             id: item.paperId,
             title: item.title,
-            authors: item.authors.map((author: any) => author.name),
+            authors: item.authors.map(author => author.name),
             abstract: item.abstract || 'No abstract available',
             year: item.year || 'N/A',
             journal: item.venue || 'Unknown',
-            keywords: item.s2FieldsOfStudy?.map((field: any) => field.category) || [],
+            keywords: item.s2FieldsOfStudy?.map(field => field.category) || [],
             publicationType: item.publicationTypes?.[0] || 'Unknown',
             openAccessPdf: item.openAccessPdf?.url || null,
         }));
@@ -86,14 +108,14 @@ export const searchOpenAlex = async ({ query, offset, limit }: SearchParams): Pr
         const page = Math.floor(offset / limit) + 1;
         const response = await fetch(`${API_ENDPOINTS.OPENALEX}?search=${encodeURIComponent(query)}&page=${page}&per-page=${limit}`)
         const data = await response.json()
-        const articles = data.results.map((item: any) => ({
+        const articles = data.results.map((item: OpenAlexItem) => ({
             id: item.id,
             title: item.title,
-            authors: item.authorships.map((authorship: any) => authorship.author.display_name),
+            authors: item.authorships.map(authorship => authorship.author.display_name),
             abstract: item.abstract || 'No abstract available',
             year: new Date(item.publication_date).getFullYear(),
             journal: item.host_venue?.display_name || 'Unknown',
-            keywords: item.concepts.map((concept: any) => concept.display_name),
+            keywords: item.concepts.map(concept => concept.display_name),
         }));
 
         return {
