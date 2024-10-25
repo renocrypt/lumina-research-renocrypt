@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { Article } from '@/types/types'
 import { searchSemanticScholar, searchArxiv, searchOpenAlex, SearchParams, SearchResult } from '@/api'
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 30
 
 interface StoredSearch {
     query: string;
