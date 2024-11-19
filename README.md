@@ -1,5 +1,9 @@
 # Lumina - Illuminating Research Insights
 
+WIP 
+
+> TO ADD semantic scholar
+
 Lumina is a powerful research tool designed to help users explore and discover academic articles from various sources. Built with React, TypeScript, and Vite, this application provides a seamless interface for searching and analyzing research papers.
 
 ## Features
